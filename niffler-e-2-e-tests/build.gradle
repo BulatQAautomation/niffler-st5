@@ -50,7 +50,7 @@ configurations {
 tasks.register('genJaxb') {
     ext.sourcesDir = "${buildDir}/generated-sources/jaxb"
     ext.classesDir = "${buildDir}/classes/jaxb"
-    ext.schema = "${userdataWsdlUrl}"
+    ext.schema = file("${projectDir}/../niffler-gateway/userdata.wsdl").absolutePath
 
     outputs.dir classesDir
 
@@ -169,6 +169,15 @@ tasks.register('printVersion') {
 test {
     options {
         systemProperties(System.getProperties())
+    }
+    // Настройка для автоматического управления драйверами через Selenium Manager
+    systemProperty 'selenide.driverManagerEnabled', 'true'
+    // Исключить /usr/local/bin из PATH для тестов, чтобы Selenium Manager использовал автоматическое управление
+    def currentPath = System.getenv('PATH') ?: ''
+    def pathParts = currentPath.split(':')
+    def filteredPath = pathParts.findAll { it != '/usr/local/bin' && !it.endsWith('/usr/local/bin') }
+    if (filteredPath) {
+        environment 'PATH', filteredPath.join(':')
     }
     testLogging.showStandardStreams = true
     testLogging.exceptionFormat = 'full'
