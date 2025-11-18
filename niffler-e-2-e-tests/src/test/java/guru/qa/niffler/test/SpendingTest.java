@@ -28,9 +28,9 @@ public class SpendingTest {
         $("button[type=submit]").submit();
     }
 
-    @GenerateCategory(
-
-    )
+//    @GenerateCategory(
+//
+//    )
     @Spend(
             username = "Bulat",
             description = "QA.GURU Advanced 5",
