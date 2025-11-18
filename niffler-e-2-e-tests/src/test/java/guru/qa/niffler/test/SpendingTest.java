@@ -3,6 +3,7 @@ package guru.qa.niffler.test;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.grpc.niffler.grpc.CurrencyValues;
+import guru.qa.niffler.jupiter.annotation.GenerateCategory;
 import guru.qa.niffler.jupiter.annotation.Spend;
 import guru.qa.niffler.jupiter.extension.BrowserExtension;
 import guru.qa.niffler.jupiter.extension.SpendExtension;
@@ -16,7 +17,7 @@ import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$;
 
 @ExtendWith({BrowserExtension.class, SpendExtension.class})
-public class  SpendingTest {
+public class SpendingTest {
 
     @BeforeEach
     void doLogin() {
@@ -27,6 +28,9 @@ public class  SpendingTest {
         $("button[type=submit]").submit();
     }
 
+    @GenerateCategory(
+
+    )
     @Spend(
             username = "Bulat",
             description = "QA.GURU Advanced 5",
@@ -35,7 +39,7 @@ public class  SpendingTest {
             amount = 65000.00
     )
     @Test
-    void spendingShouldBeDeletedAfter(SpendJson spendJson) {
+    void spendingShouldBeDeletedAfterTableAction(SpendJson spendJson) {
         SelenideElement rowWithSpending = $(".spending-table tbody")
                 .$$("tr")
                 .find(text(spendJson.description()));
