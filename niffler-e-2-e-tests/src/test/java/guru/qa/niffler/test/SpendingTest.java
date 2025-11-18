@@ -5,6 +5,8 @@ import com.codeborne.selenide.SelenideElement;
 import guru.qa.grpc.niffler.grpc.CurrencyValues;
 import guru.qa.niffler.jupiter.annotation.Spend;
 import guru.qa.niffler.jupiter.extension.BrowserExtension;
+import guru.qa.niffler.jupiter.extension.SpendExtension;
+import guru.qa.niffler.model.SpendJson;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,8 +15,8 @@ import static com.codeborne.selenide.CollectionCondition.size;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$;
 
-@ExtendWith(BrowserExtension.class)
-public class SpendingTest {
+@ExtendWith({BrowserExtension.class, SpendExtension.class})
+public class  SpendingTest {
 
     @BeforeEach
     void doLogin() {
@@ -33,10 +35,10 @@ public class SpendingTest {
             amount = 65000.00
     )
     @Test
-    void spendingShouldBeDeletedAfter() {
+    void spendingShouldBeDeletedAfter(SpendJson spendJson) {
         SelenideElement rowWithSpending = $(".spending-table tbody")
                 .$$("tr")
-                .find(text("QA.GURU Advanced 5"));
+                .find(text(spendJson.description()));
 
         rowWithSpending.$$("td").first().click();
         $(".spendings__bulk-actions button")
