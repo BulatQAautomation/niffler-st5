@@ -11,7 +11,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Spend {
-    @JsonProperty("category")
     String category();
     CurrencyValues currency();
     double amount();

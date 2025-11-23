@@ -1,11 +1,12 @@
 package guru.qa.niffler.jupiter.extension;
 
 import guru.qa.niffler.api.SpendApi;
+import guru.qa.niffler.api.OkHttpProvider;
 import guru.qa.niffler.jupiter.annotation.Spend;
 import guru.qa.niffler.model.SpendJson;
-import okhttp3.OkHttpClient;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
@@ -16,12 +17,8 @@ public class SpendExtension implements BeforeEachCallback, ParameterResolver {
 
     public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(SpendExtension.class);
 
-    private static final OkHttpClient okHttpClient = new OkHttpClient()
-            .newBuilder()
-            .build();
-
     private final Retrofit retrofit = new Retrofit.Builder()
-            .client(okHttpClient)
+            .client(OkHttpProvider.client())
             .baseUrl("http://127.0.0.1:8093/")
             .addConverterFactory(JacksonConverterFactory.create())
             .build();
@@ -29,7 +26,7 @@ public class SpendExtension implements BeforeEachCallback, ParameterResolver {
     private final SpendApi spendApi = retrofit.create(SpendApi.class);
 
     @Override
-    public void beforeEach(ExtensionContext extensionContext) throws Exception {
+    public void beforeEach(ExtensionContext extensionContext) {
         AnnotationSupport.findAnnotation(
                 extensionContext.getRequiredTestMethod(),
                 Spend.class).ifPresent(
@@ -44,7 +41,8 @@ public class SpendExtension implements BeforeEachCallback, ParameterResolver {
                             spend.username()
                     );
                     try {
-                        SpendJson result = spendApi.createSpend(spendJson).execute().body();
+                        Response<SpendJson> response = spendApi.createSpend(spendJson).execute();
+                        SpendJson result = response.body() != null ? response.body() : spendJson;
                         extensionContext.getStore(NAMESPACE).put("spend", result);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
