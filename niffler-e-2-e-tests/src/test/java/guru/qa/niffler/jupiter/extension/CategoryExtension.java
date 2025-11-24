@@ -48,7 +48,7 @@ public class CategoryExtension implements BeforeEachCallback, ParameterResolver 
                         if (!hasCategory) {
                             Response<CategoryJson> response = categoryApi.createCategory(categoryJson).execute();
                             CategoryJson result = response.body() != null ? response.body() : categoryJson;
-                            extensionContext.getStore(NAMESPACE).put("category", result);
+                            extensionContext.getStore(NAMESPACE).put(extensionContext.getUniqueId(), result);
                             if (!response.isSuccessful()) {
                                 throw new IllegalStateException("Couldn't create category: " + response.code() + " " + response.message());
                             }
@@ -68,7 +68,7 @@ public class CategoryExtension implements BeforeEachCallback, ParameterResolver 
 
     @Override
     public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-        return extensionContext.getStore(NAMESPACE).get("category");
+        return extensionContext.getStore(NAMESPACE).get(extensionContext.getUniqueId(), CategoryJson.class);
     }
 
 }

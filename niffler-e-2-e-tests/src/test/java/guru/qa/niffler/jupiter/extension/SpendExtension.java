@@ -43,7 +43,7 @@ public class SpendExtension implements BeforeEachCallback, ParameterResolver {
                     try {
                         Response<SpendJson> response = spendApi.createSpend(spendJson).execute();
                         SpendJson result = response.body() != null ? response.body() : spendJson;
-                        extensionContext.getStore(NAMESPACE).put("spend", result);
+                        extensionContext.getStore(NAMESPACE).put(extensionContext.getUniqueId(), result);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -59,6 +59,6 @@ public class SpendExtension implements BeforeEachCallback, ParameterResolver {
 
     @Override
     public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-        return extensionContext.getStore(NAMESPACE).get("spend");
+        return extensionContext.getStore(NAMESPACE).get(extensionContext.getUniqueId(), SpendJson.class);
     }
 }

@@ -7,15 +7,17 @@ import guru.qa.niffler.jupiter.annotation.Category;
 import guru.qa.niffler.jupiter.annotation.Spend;
 import guru.qa.niffler.jupiter.annotation.meta.WebTest;
 import guru.qa.niffler.model.SpendJson;
+import guru.qa.niffler.pages.MainPage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static com.codeborne.selenide.CollectionCondition.size;
-import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$;
 
 @WebTest
 public class SpendingTest {
+
+    private final MainPage mainPage = new MainPage();
 
     @BeforeEach
     void doLogin() {
@@ -26,17 +28,22 @@ public class SpendingTest {
         $("button[type=submit]").submit();
     }
 
-    @Category(userName = "BULAT", category = "Обучение")
-    @Spend(username = "BULAT", description = "QA.GURU Advanced 5", currency = CurrencyValues.RUB, category = "Обучение", amount = 65000.00)
+    @Category(
+            userName = "BULAT",
+            category = "Обучение"
+    )
+    @Spend(
+            username = "BULAT",
+            description = "QA.GURU Advanced 5",
+            currency = CurrencyValues.RUB,
+            category = "Обучение",
+            amount = 65000.00
+    )
     @Test
     void spendingShouldBeDeletedAfterTableAction(SpendJson spendJson) {
-        SelenideElement rowWithSpending = $(".table.spendings-table tbody").$$("tr").find(text(spendJson.description()));
-
+        SelenideElement rowWithSpending = mainPage.spendingRow(spendJson.description());
         rowWithSpending.$$("td").first().click();
-        $(".spendings__bulk-actions button").click();
-
-        $(".spendings-table tbody").$$("tr").shouldHave(size(0));
-
-
+        mainPage.spendingBulkActionsButton().click();
+        mainPage.spendingRows().shouldHave(size(0));
     }
 }
